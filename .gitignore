@@ -1,5 +1,18 @@
-.venv/
+
+# Python
 __pycache__/
 *.py[cod]
+
+# Environment and editor settings
+.venv/
 .env
 .vscode/
+
+# Local account database and SQLite files
+data/edupulse_users.db
+data/edupulse_users.db-journal
+data/edupulse_users.db-wal
+data/edupulse_users.db-shm
+
+# Local administrator setup script
+create_admin.py

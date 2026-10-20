@@ -3,6 +3,8 @@
 
 import streamlit as st
 
+from src.auth.ui import render_login, render_logout
+from src.auth.dashboards import render_role_dashboard
 from src.analytics.semester_trends import calculate_semester_trends
 from src.analytics.executive_summary import calculate_executive_summary
 from src.analytics.department_risk import calculate_department_risk
@@ -31,7 +33,18 @@ st.caption(
     "Explore academic performance, attendance, and rule-based "
     "student support indicators using validated student data."
 )
+# Authentication gate: keep the existing dashboard behind login.
+authenticated_user = st.session_state.get("authenticated_user")
 
+if authenticated_user is None:
+    render_login()
+    st.stop()
+
+render_logout()
+
+if authenticated_user.get("role") != "admin":
+    render_role_dashboard(authenticated_user)
+    st.stop()
 # -------------------------------------------------------------------
 # Sidebar: data source configuration
 # -------------------------------------------------------------------
