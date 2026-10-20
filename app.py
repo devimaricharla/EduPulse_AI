@@ -327,6 +327,61 @@ else:
             hide_index=True,
         )
 
+    # ---------------------------------------------------------------
+    # Downloadable reports
+    # ---------------------------------------------------------------
+
+    st.markdown("### Download reports")
+
+    st.caption(
+        "Export reports for the currently selected department and "
+        "semester filters."
+    )
+
+    report_col1, report_col2, report_col3 = st.columns(3)
+
+    # Student performance report
+    with report_col1:
+        student_csv = filtered_data.to_csv(index=False).encode("utf-8")
+
+        st.download_button(
+            label="Download student report",
+            data=student_csv,
+            file_name="edupulse_student_report.csv",
+            mime="text/csv",
+            key="download_student_report",
+        )
+
+    # Student support report
+    with report_col2:
+        risk_report = identify_student_risks(filtered_data)
+
+        risk_csv = risk_report.to_csv(index=False).encode("utf-8")
+
+        st.download_button(
+            label="Download support report",
+            data=risk_csv,
+            file_name="edupulse_student_support_report.csv",
+            mime="text/csv",
+            key="download_support_report",
+        )
+
+    # Department risk report
+    with report_col3:
+        department_report = calculate_department_risk(filtered_data)
+
+        department_csv = department_report.to_csv(
+            index=False
+        ).encode("utf-8")
+
+        st.download_button(
+            label="Download department report",
+            data=department_csv,
+            file_name="edupulse_department_risk_report.csv",
+            mime="text/csv",
+            key="download_department_report",
+        )
+
 
 # -------------------------------------------------------------------
 # Methodology note
