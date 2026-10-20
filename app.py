@@ -6,6 +6,9 @@ import streamlit as st
 from src.analytics.department_risk import calculate_department_risk
 from src.analytics.kpis import calculate_overall_kpis
 from src.analytics.risk import identify_student_risks
+from src.analytics.department_performance import (
+    calculate_department_performance,
+)
 from src.components.charts import (
     show_attendance_vs_performance,
     show_department_comparison,
@@ -198,6 +201,70 @@ else:
 
     with chart_tab3:
         show_attendance_vs_performance(filtered_data)
+
+    
+    # ---------------------------------------------------------------
+    # Department performance comparison
+    # ---------------------------------------------------------------
+
+    st.markdown("### Department performance comparison")
+
+    department_performance = calculate_department_performance(
+        filtered_data
+    )
+
+    st.caption(
+        "Compare average academic scores, attendance, and pass rates "
+        "across departments using the selected filters."
+    )
+
+    performance_tab1, performance_tab2, performance_tab3 = st.tabs(
+        [
+            "Academic scores",
+            "Attendance",
+            "Pass rates",
+        ]
+    )
+
+    with performance_tab1:
+        st.bar_chart(
+            department_performance.set_index("department")[
+                ["average_academic_score"]
+            ],
+            x_label="Department",
+            y_label="Average academic score (0–100)",
+        )
+
+    with performance_tab2:
+        st.bar_chart(
+            department_performance.set_index("department")[
+                ["average_attendance"]
+            ],
+            x_label="Department",
+            y_label="Average attendance (%)",
+        )
+
+    with performance_tab3:
+        st.bar_chart(
+            department_performance.set_index("department")[
+                ["pass_rate"]
+            ],
+            x_label="Department",
+            y_label="Pass rate (%)",
+        )
+
+    with st.expander("View department performance breakdown"):
+        st.dataframe(
+            department_performance.round(
+                {
+                    "average_academic_score": 2,
+                    "average_attendance": 2,
+                    "pass_rate": 2,
+                }
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
 
     # ---------------------------------------------------------------
     # Department risk analytics
