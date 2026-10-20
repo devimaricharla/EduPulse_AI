@@ -3,6 +3,7 @@
 
 import streamlit as st
 
+from src.analytics.executive_summary import calculate_executive_summary
 from src.analytics.department_risk import calculate_department_risk
 from src.analytics.kpis import calculate_overall_kpis
 from src.analytics.risk import identify_student_risks
@@ -136,6 +137,76 @@ if filtered_data.empty:
     )
 
 else:
+    
+    # ---------------------------------------------------------------
+    # Executive summary
+    # ---------------------------------------------------------------
+
+    st.markdown("### Executive summary")
+
+    executive_summary = calculate_executive_summary(filtered_data)
+
+    summary_columns = st.columns(4)
+
+    summary_columns[0].metric(
+        "Students analyzed",
+        f"{executive_summary['total_students']:,}",
+    )
+
+    summary_columns[1].metric(
+        "Students with support indicators",
+        f"{executive_summary['flagged_students']:,}",
+        help="Students triggering at least one configured support rule.",
+    )
+
+    summary_columns[2].metric(
+        "Support indicator rate",
+        f"{executive_summary['flagged_student_rate']:.2f}%",
+    )
+
+    summary_columns[3].metric(
+        "Multiple indicators",
+        f"{executive_summary['multiple_indicator_students']:,}",
+        help="Students triggering at least two configured support rules.",
+    )
+
+    with st.expander("View institutional highlights"):
+        st.write(
+            "**Average academic score:** "
+            f"{executive_summary['average_academic_score']:.2f} / 100"
+        )
+
+        st.write(
+            "**Average attendance:** "
+            f"{executive_summary['average_attendance']:.2f}%"
+        )
+
+        st.write(
+            "**Pass rate:** "
+            f"{executive_summary['pass_rate']:.2f}%"
+        )
+
+        st.write(
+            "**Students below attendance threshold:** "
+            f"{executive_summary['low_attendance_count']}"
+        )
+
+        st.write(
+            "**Highest average-score department:** "
+            f"{executive_summary['highest_performing_department'] or 'N/A'}"
+        )
+
+        st.write(
+            "**Highest support-indicator-rate department:** "
+            f"{executive_summary['highest_support_rate_department'] or 'N/A'}"
+        )
+
+    st.caption(
+        "Department highlights describe the selected records and do not "
+        "establish causes. Support indicators are rule-based flags for "
+        "human review, not predictions or diagnoses."
+    )
+
     # ---------------------------------------------------------------
     # Cohort KPIs
     # ---------------------------------------------------------------
