@@ -4,6 +4,7 @@
 import streamlit as st
 
 from src.analytics.kpis import calculate_overall_kpis
+from src.analytics.risk import identify_student_risks
 from src.components.charts import (
     show_attendance_vs_performance,
     show_department_comparison,
@@ -171,12 +172,86 @@ else:
     with chart_tab3:
         show_attendance_vs_performance(filtered_data)
 
+   
+    st.markdown("### Student support insights")
+
+    # Apply the transparent, rule-based support indicators.
+    risk_data = identify_student_risks(filtered_data)
+
+    flagged_data = risk_data.loc[
+        risk_data["risk_indicator_count"] > 0
+    ].copy()
+
+    support_col1, support_col2 = st.columns(2)
+
+    with support_col1:
+        st.metric(
+            "Students with support indicators",
+            len(flagged_data),
+        )
+
+    with support_col2:
+        st.metric(
+            "Students with multiple indicators",
+            int((risk_data["risk_indicator_count"] >= 2).sum()),
+        )
+
+    st.caption(
+        "These indicators highlight records for human review. "
+        "They are rule-based flags, not predictions or diagnoses."
+    )
+
+    priority_options = [
+        "All students",
+        "Flagged students only",
+        "Consider support",
+        "Support recommended",
+        "Multiple support indicators",
+        "No rule-based flag",
+    ]
+
+    selected_priority = st.selectbox(
+        "Filter student support records",
+        options=priority_options,
+        index=1,
+    )
+
+    if selected_priority == "All students":
+        displayed_risk_data = risk_data.copy()
+    elif selected_priority == "Flagged students only":
+        displayed_risk_data = flagged_data.copy()
+    else:
+        displayed_risk_data = risk_data.loc[
+            risk_data["support_priority"] == selected_priority
+        ].copy()
+
+    support_columns = [
+        "student_id",
+        "student_name",
+        "department",
+        "semester",
+        "average_academic_score",
+        "attendance_percentage",
+        "final_score",
+        "support_priority",
+        "support_reasons",
+    ]
+
+    st.dataframe(
+        displayed_risk_data[support_columns].round(
+            {"average_academic_score": 2}
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+
     with st.expander("View filtered student records"):
         st.dataframe(
             filtered_data,
             use_container_width=True,
             hide_index=True,
         )
+
 
 
 st.caption(
