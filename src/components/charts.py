@@ -38,7 +38,7 @@ def show_department_comparison(data: pd.DataFrame) -> None:
         },
     )
     figure.update_yaxes(range=[0, 100])
-    st.plotly_chart(figure, use_container_width=True)
+    st.plotly_chart(figure, width="stretch")
 
 
 def show_semester_performance(data: pd.DataFrame) -> None:
@@ -71,8 +71,7 @@ def show_semester_performance(data: pd.DataFrame) -> None:
         },
     )
     figure.update_yaxes(range=[0, 100])
-    st.plotly_chart(figure, use_container_width=True)
-
+    st.plotly_chart(figure, width="stretch")
 
 def show_attendance_vs_performance(data: pd.DataFrame) -> None:
     """Display the relationship between attendance and academic scores."""
@@ -97,4 +96,4 @@ def show_attendance_vs_performance(data: pd.DataFrame) -> None:
     )
     figure.update_xaxes(range=[0, 100])
     figure.update_yaxes(range=[0, 100])
-    st.plotly_chart(figure, use_container_width=True)
+    st.plotly_chart(figure, width="stretch")
