@@ -3,6 +3,7 @@
 
 import streamlit as st
 
+from src.analytics.semester_trends import calculate_semester_trends
 from src.analytics.executive_summary import calculate_executive_summary
 from src.analytics.department_risk import calculate_department_risk
 from src.analytics.kpis import calculate_overall_kpis
@@ -336,6 +337,52 @@ else:
             use_container_width=True,
             hide_index=True,
         )
+    
+    # Semester-wise performance trends
+    semester_summary = calculate_semester_trends(filtered_data)
+
+    st.markdown("### Semester-wise Performance Trends")
+    st.caption(
+        "Compare academic scores, attendance, and pass rates "
+        "across semesters in the currently selected records."
+    )
+
+    tab1, tab2, tab3 = st.tabs(
+        ["Academic Scores", "Attendance", "Pass Rates"]
+    )
+
+    with tab1:
+        st.line_chart(
+            semester_summary.set_index("semester")[
+                ["average_academic_score"]
+            ],
+            x_label="Semester",
+            y_label="Average academic score (0–100)",
+        )
+
+    with tab2:
+        st.line_chart(
+            semester_summary.set_index("semester")[
+                ["average_attendance"]
+            ],
+            x_label="Semester",
+            y_label="Average attendance (%)",
+        )
+
+    with tab3:
+        st.line_chart(
+            semester_summary.set_index("semester")[["pass_rate"]],
+            x_label="Semester",
+            y_label="Pass rate (%)",
+        )
+
+    with st.expander("View semester performance breakdown"):
+        st.dataframe(
+            semester_summary.round(2),
+            use_container_width=True,
+            hide_index=True,
+        )
+
 
     # ---------------------------------------------------------------
     # Department risk analytics
