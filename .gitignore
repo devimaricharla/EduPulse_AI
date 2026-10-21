@@ -16,3 +16,5 @@ data/edupulse_users.db-shm
 
 # Local administrator setup script
 create_admin.py
+
+src/auth/database.py.bak

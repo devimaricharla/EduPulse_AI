@@ -40,11 +40,26 @@ if authenticated_user is None:
     render_login()
     st.stop()
 
+
 render_logout()
+
+if authenticated_user.get("role") == "student":
+    try:
+        student_data = load_sample_student_data()
+    except ValueError as exc:
+        st.error(f"Unable to load academic data: {exc}")
+        st.stop()
+
+    render_role_dashboard(
+        authenticated_user,
+        student_data=student_data,
+    )
+    st.stop()
 
 if authenticated_user.get("role") != "admin":
     render_role_dashboard(authenticated_user)
     st.stop()
+
 # -------------------------------------------------------------------
 # Sidebar: data source configuration
 # -------------------------------------------------------------------
@@ -347,7 +362,7 @@ else:
                     "pass_rate": 2,
                 }
             ),
-            use_container_width=True,
+            use_container_width="stretch",
             hide_index=True,
         )
     
@@ -392,7 +407,7 @@ else:
     with st.expander("View semester performance breakdown"):
         st.dataframe(
             semester_summary.round(2),
-            use_container_width=True,
+            use_container_width="stretch",
             hide_index=True,
         )
 
@@ -433,7 +448,7 @@ else:
 
         st.dataframe(
             display_department_risk,
-            use_container_width=True,
+            use_container_width="stretch",
             hide_index=True,
         )
 
@@ -510,7 +525,7 @@ else:
         displayed_risk_data[support_columns].round(
             {"average_academic_score": 2}
         ),
-        use_container_width=True,
+        use_container_width="stretch",
         hide_index=True,
     )
 
@@ -521,7 +536,7 @@ else:
     with st.expander("View filtered student records"):
         st.dataframe(
             filtered_data,
-            use_container_width=True,
+            use_container_width="stretch",
             hide_index=True,
         )
 
